@@ -11,5 +11,8 @@
         public string Observacoes_Tecnicas { get; set; }
         public string Status {  get; set; }
         public DateTime Data_Entrada { get; set; }
+
+        public virtual Usuario Cliente { get; set; }
+        public virtual Usuario Tecnico { get; set; }
     }
 }

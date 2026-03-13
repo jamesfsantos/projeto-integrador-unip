@@ -6,5 +6,7 @@
         public int UsuarioId { get; set; }
         public DateTime DataPedido { get; set; }
         public decimal ValorTotalPedido { get; set; }
+
+        
     }
 }
