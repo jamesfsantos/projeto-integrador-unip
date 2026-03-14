@@ -1,11 +1,11 @@
 ﻿namespace ByTech_API.Models
 {
-    public class MensagemContato
+    public class Usuarios
     {
         public int Id { get; set; }
         public string Nome { get; set; }
         public string Email { get; set; }
-        public string Celular { get; set; }
-        public string Mensagem { get; set; }
+        public string Senha { get; set; }
+        public string Tipo_Usuario { get; set; }
     }
 }

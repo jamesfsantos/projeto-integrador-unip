@@ -18,13 +18,13 @@ namespace ByTech_API.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
+        public async Task<ActionResult<IEnumerable<Usuarios>>> GetUsuarios()
         {
             return await _context.Usuarios.ToListAsync();
         }
 
         [HttpPost]
-        public async Task<ActionResult<IEnumerable<Usuario>>> PostUsuario(Usuario usuario)
+        public async Task<ActionResult<IEnumerable<Usuarios>>> PostUsuario(Usuarios usuario)
         {
             _context.Add(usuario);
             await _context.SaveChangesAsync();
