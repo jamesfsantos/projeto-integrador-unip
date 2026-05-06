@@ -2,6 +2,7 @@
 using ByTech_API.Data;
 using ByTech_API.Dtos;
 using ByTech_API.Models;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
 
 namespace ByTech_API.Services
@@ -17,8 +18,7 @@ namespace ByTech_API.Services
         public async Task<PedidoDto> AdicionarPedido(PedidoDto pedidoDto)
         {
             var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == pedidoDto.Email);
-            if (usuario == null) throw new Exception("Usuário nao encontrado para o email fornecido") ;
-
+            if (usuario == null) throw new Exception("Usuário não encontrado.");
 
             var pedido = new Pedido
             {
@@ -30,25 +30,42 @@ namespace ByTech_API.Services
                 DataPedido = DateTime.Now,
                 ValorTotalPedido = pedidoDto.ValorTotalPedido,
                 Endereco = pedidoDto.Endereco,
-                Cep= pedidoDto.Cep,
+                Cep = pedidoDto.Cep,
                 Cidade = pedidoDto.Cidade,
                 Complemento = pedidoDto.Complemento,
-                ItensPedidos = pedidoDto.Itens.Select(itemDto => new ItemPedido
-                {
-                    ProdutoId = itemDto.ProdutoId,
-                    Nome = itemDto.Nome,
-                    Quantidade = itemDto.Quantidade,
-                    Valor = itemDto.Valor,
-                    ValorTotal = itemDto.ValorTotal,
-                }).ToList()
+                StatusPedidoId = pedidoDto.StatusPedidoId,
+                ItensPedidos = new List<ItemPedido>() // Começa vazia
             };
-            //var usuarioExiste = await _context.Usuarios.AnyAsync(u => u.Id == pedidoDto.UsuarioId);
-            //if (!usuarioExiste)
-            //    throw new Exception($"Erro: Usuario com ID{pedidoDto.UsuarioId} não existe");
+
+            foreach (var itemDto in pedidoDto.Itens)
+            {
+
+                var produto = await _context.Produtos.FindAsync(itemDto.ProdutoId);
+
+                if (produto == null)
+                    throw new Exception($"Produto com id: {itemDto.ProdutoId} não encontrado");
+
+                if (produto.EstoqueAtual < itemDto.Quantidade)
+                    throw new Exception($"Estoque insuficiente para o produto: {produto.Nome}");
+
+
+                produto.EstoqueAtual -= itemDto.Quantidade;
+
+
+                pedido.ItensPedidos.Add(new ItemPedido
+                {
+                    ProdutoId = produto.Id,
+                    Nome = produto.Nome,
+                    Quantidade = itemDto.Quantidade,
+                    Valor = produto.PrecoVenda,
+                    ValorTotal = produto.PrecoVenda * itemDto.Quantidade
+                });
+            }
+
+
             _context.Pedidos.Add(pedido);
-
-
             await _context.SaveChangesAsync();
+
             return pedidoDto;
         }
 
@@ -66,7 +83,7 @@ namespace ByTech_API.Services
 
         public async Task<IEnumerable<PedidoDto>> ObterTodosPedidos()
         {
-            var pedidos = await _context.Pedidos.Include(p => p.ItensPedidos).ToListAsync();
+            var pedidos = await _context.Pedidos.Include(p => p.ItensPedidos).Include(p => p.StatusPedido).ToListAsync();
 
             if (pedidos == null || !pedidos.Any())
                 return null;
@@ -76,7 +93,9 @@ namespace ByTech_API.Services
 
         public async Task<IEnumerable<PedidoDto>> ObterTodosPedidosEmail(string email)
         {
-            var pedidos = await _context.Pedidos.Include(p => p.ItensPedidos).Where(x => x.Email == email).ToListAsync();
+            var pedidos = await _context.Pedidos.Include(p => p.ItensPedidos)
+                                                .Include(p => p.StatusPedido)
+                                                .Where(x => x.Email == email).ToListAsync();
 
             if (pedidos == null)
                 return null;

@@ -21,11 +21,14 @@ namespace ByTech_API.Data.Configurations
             builder.Property(x => x.Complemento).HasColumnName("complemento").HasColumnType("varchar(150)");
             builder.Property(x => x.Cidade).HasColumnName("cidade").HasColumnType("varchar(100)");
             builder.Property(x => x.Cep).HasColumnName("cep").HasColumnType("varchar(20)");
+            builder.Property(x => x.StatusPedidoId).HasColumnName("id_status_pedido").HasColumnType("int(11)");
 
             builder.HasOne(x => x.Usuario)
                 .WithMany()
                 .HasForeignKey(x => x.UsuarioId);
-
+            builder.HasOne(x => x.StatusPedido)
+                .WithMany()
+                .HasForeignKey(x => x.StatusPedidoId);
         }
     }
 }

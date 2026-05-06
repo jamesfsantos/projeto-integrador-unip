@@ -31,6 +31,8 @@ namespace ByTech_API.Services
                 Ativo = true
             };
 
+
+
             _context.Add(produto);
             await _context.SaveChangesAsync();
             produtoDto.Id = produto.Id;

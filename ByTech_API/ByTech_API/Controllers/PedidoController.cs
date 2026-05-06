@@ -31,11 +31,18 @@ namespace ByTech_API.Controllers
         [HttpPost]
         public async Task<IActionResult> AdicionarPedido(PedidoDto pedidoDto)
         {
-            var pedidos = await _service.AdicionarPedido(pedidoDto);
-            if (pedidos == null)
-                return BadRequest("Erro ao adicionar pedido!");
+            try
+            {
+                var pedidos = await _service.AdicionarPedido(pedidoDto);
+                if (pedidos == null)
+                    return BadRequest("Erro ao adicionar pedido!");
 
-            return Ok(pedidos);
+                return Ok(pedidos);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(new {message = ex.Message});
+            }      
         }
         
 

@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ByTech_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260428015156_Initial")]
-    partial class Initial
+    [Migration("20260506171050_status_pedido")]
+    partial class status_pedido
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -71,16 +71,21 @@ namespace ByTech_API.Migrations
                     b.ToTable("categoria", (string)null);
                 });
 
-            modelBuilder.Entity("ByTech_API.Models.ItemVenda", b =>
+            modelBuilder.Entity("ByTech_API.Models.ItemPedido", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("id");
 
-                    b.Property<decimal>("PrecoUnitarioPago")
-                        .HasColumnType("decimal(18,2)")
-                        .HasColumnName("preco_unitario_pago");
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasColumnType("longtext")
+                        .HasColumnName("nome_produto");
+
+                    b.Property<int>("PedidoId")
+                        .HasColumnType("int")
+                        .HasColumnName("id_pedido");
 
                     b.Property<int>("ProdutoId")
                         .HasColumnType("int")
@@ -90,17 +95,21 @@ namespace ByTech_API.Migrations
                         .HasColumnType("INT(11)")
                         .HasColumnName("quantidade");
 
-                    b.Property<int>("VendaId")
-                        .HasColumnType("int")
-                        .HasColumnName("id_venda");
+                    b.Property<decimal>("Valor")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("valor");
+
+                    b.Property<decimal>("ValorTotal")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("valor_total");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("PedidoId");
+
                     b.HasIndex("ProdutoId");
 
-                    b.HasIndex("VendaId");
-
-                    b.ToTable("item_venda", (string)null);
+                    b.ToTable("item_pedido", (string)null);
                 });
 
             modelBuilder.Entity("ByTech_API.Models.MensagensContato", b =>
@@ -161,33 +170,72 @@ namespace ByTech_API.Migrations
                         .HasColumnType("longtext")
                         .HasColumnName("metodo");
 
+                    b.Property<int>("PedidoId")
+                        .HasColumnType("int")
+                        .HasColumnName("id_pedido");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("longtext")
                         .HasColumnName("status");
 
-                    b.Property<int>("VendaId")
-                        .HasColumnType("int")
-                        .HasColumnName("id_venda");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("VendaId")
+                    b.HasIndex("PedidoId")
                         .IsUnique();
 
                     b.ToTable("pagamento", (string)null);
                 });
 
-            modelBuilder.Entity("ByTech_API.Models.PedidoVenda", b =>
+            modelBuilder.Entity("ByTech_API.Models.Pedido", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasColumnName("id");
 
+                    b.Property<string>("Celular")
+                        .IsRequired()
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("celular");
+
+                    b.Property<string>("Cep")
+                        .IsRequired()
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("cep");
+
+                    b.Property<string>("Cidade")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("cidade");
+
+                    b.Property<string>("Complemento")
+                        .IsRequired()
+                        .HasColumnType("varchar(150)")
+                        .HasColumnName("complemento");
+
+                    b.Property<string>("Cpf")
+                        .IsRequired()
+                        .HasColumnType("varchar(14)")
+                        .HasColumnName("cpf");
+
                     b.Property<DateTime>("DataPedido")
                         .HasColumnType("datetime(6)")
                         .HasColumnName("data_pedido");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("email");
+
+                    b.Property<string>("Endereco")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("endereco");
+
+                    b.Property<string>("NomeUsuario")
+                        .IsRequired()
+                        .HasColumnType("longtext");
 
                     b.Property<int>("UsuarioId")
                         .HasColumnType("int")
@@ -201,7 +249,7 @@ namespace ByTech_API.Migrations
 
                     b.HasIndex("UsuarioId");
 
-                    b.ToTable("pedido_venda", (string)null);
+                    b.ToTable("pedido", (string)null);
                 });
 
             modelBuilder.Entity("ByTech_API.Models.Produto", b =>
@@ -211,9 +259,21 @@ namespace ByTech_API.Migrations
                         .HasColumnType("int")
                         .HasColumnName("id");
 
+                    b.Property<sbyte>("Ativo")
+                        .HasColumnType("tinyint")
+                        .HasColumnName("ativo");
+
                     b.Property<int>("CategoriaId")
                         .HasColumnType("int(11)")
                         .HasColumnName("id_categoria");
+
+                    b.Property<DateTime>("DataAtualizacao")
+                        .HasColumnType("datetime")
+                        .HasColumnName("data_atualizacao");
+
+                    b.Property<DateTime>("DataCadastro")
+                        .HasColumnType("datetime")
+                        .HasColumnName("data_cadastro");
 
                     b.Property<string>("Descricao")
                         .IsRequired()
@@ -303,6 +363,22 @@ namespace ByTech_API.Migrations
                     b.ToTable("servico_manutencao", (string)null);
                 });
 
+            modelBuilder.Entity("ByTech_API.Models.StatusPedido", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(11)");
+
+                    b.Property<string>("StatusAtual")
+                        .IsRequired()
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("status_atual");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("status_pedido", (string)null);
+                });
+
             modelBuilder.Entity("ByTech_API.Models.TipoUsuario", b =>
                 {
                     b.Property<int>("Id")
@@ -349,7 +425,7 @@ namespace ByTech_API.Migrations
 
                     b.Property<string>("Cpf")
                         .IsRequired()
-                        .HasColumnType("varchar(9)")
+                        .HasColumnType("varchar(20)")
                         .HasColumnName("cpf");
 
                     b.Property<string>("Email")
@@ -399,23 +475,23 @@ namespace ByTech_API.Migrations
                     b.Navigation("UsuarioAdmin");
                 });
 
-            modelBuilder.Entity("ByTech_API.Models.ItemVenda", b =>
+            modelBuilder.Entity("ByTech_API.Models.ItemPedido", b =>
                 {
+                    b.HasOne("ByTech_API.Models.Pedido", "Pedido")
+                        .WithMany("ItensPedidos")
+                        .HasForeignKey("PedidoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ByTech_API.Models.Produto", "Produto")
                         .WithMany()
                         .HasForeignKey("ProdutoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("ByTech_API.Models.PedidoVenda", "Venda")
-                        .WithMany()
-                        .HasForeignKey("VendaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Pedido");
 
                     b.Navigation("Produto");
-
-                    b.Navigation("Venda");
                 });
 
             modelBuilder.Entity("ByTech_API.Models.MensagensContato", b =>
@@ -431,16 +507,16 @@ namespace ByTech_API.Migrations
 
             modelBuilder.Entity("ByTech_API.Models.Pagamento", b =>
                 {
-                    b.HasOne("ByTech_API.Models.PedidoVenda", "Venda")
+                    b.HasOne("ByTech_API.Models.Pedido", "Pedido")
                         .WithOne()
-                        .HasForeignKey("ByTech_API.Models.Pagamento", "VendaId")
+                        .HasForeignKey("ByTech_API.Models.Pagamento", "PedidoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Venda");
+                    b.Navigation("Pedido");
                 });
 
-            modelBuilder.Entity("ByTech_API.Models.PedidoVenda", b =>
+            modelBuilder.Entity("ByTech_API.Models.Pedido", b =>
                 {
                     b.HasOne("ByTech_API.Models.Usuario", "Usuario")
                         .WithMany()
@@ -490,6 +566,11 @@ namespace ByTech_API.Migrations
                         .IsRequired();
 
                     b.Navigation("TipoUsuario");
+                });
+
+            modelBuilder.Entity("ByTech_API.Models.Pedido", b =>
+                {
+                    b.Navigation("ItensPedidos");
                 });
 #pragma warning restore 612, 618
         }

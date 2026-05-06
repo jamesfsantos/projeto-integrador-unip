@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ByTech_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260503023156_update")]
-    partial class update
+    [Migration("20260506171555_pedido-status")]
+    partial class pedidostatus
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -199,6 +199,21 @@ namespace ByTech_API.Migrations
                         .HasColumnType("varchar(20)")
                         .HasColumnName("celular");
 
+                    b.Property<string>("Cep")
+                        .IsRequired()
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("cep");
+
+                    b.Property<string>("Cidade")
+                        .IsRequired()
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("cidade");
+
+                    b.Property<string>("Complemento")
+                        .IsRequired()
+                        .HasColumnType("varchar(150)")
+                        .HasColumnName("complemento");
+
                     b.Property<string>("Cpf")
                         .IsRequired()
                         .HasColumnType("varchar(14)")
@@ -213,9 +228,18 @@ namespace ByTech_API.Migrations
                         .HasColumnType("varchar(100)")
                         .HasColumnName("email");
 
+                    b.Property<string>("Endereco")
+                        .IsRequired()
+                        .HasColumnType("varchar(255)")
+                        .HasColumnName("endereco");
+
                     b.Property<string>("NomeUsuario")
                         .IsRequired()
                         .HasColumnType("longtext");
+
+                    b.Property<int>("StatusPedidoId")
+                        .HasColumnType("int(11)")
+                        .HasColumnName("id_status_pedido");
 
                     b.Property<int>("UsuarioId")
                         .HasColumnType("int")
@@ -226,6 +250,8 @@ namespace ByTech_API.Migrations
                         .HasColumnName("valor_total_pedido");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("StatusPedidoId");
 
                     b.HasIndex("UsuarioId");
 
@@ -343,6 +369,23 @@ namespace ByTech_API.Migrations
                     b.ToTable("servico_manutencao", (string)null);
                 });
 
+            modelBuilder.Entity("ByTech_API.Models.StatusPedido", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int(11)")
+                        .HasColumnName("id");
+
+                    b.Property<string>("StatusAtual")
+                        .IsRequired()
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("status_atual");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("status_pedido", (string)null);
+                });
+
             modelBuilder.Entity("ByTech_API.Models.TipoUsuario", b =>
                 {
                     b.Property<int>("Id")
@@ -442,7 +485,7 @@ namespace ByTech_API.Migrations
             modelBuilder.Entity("ByTech_API.Models.ItemPedido", b =>
                 {
                     b.HasOne("ByTech_API.Models.Pedido", "Pedido")
-                        .WithMany()
+                        .WithMany("ItensPedidos")
                         .HasForeignKey("PedidoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -482,11 +525,19 @@ namespace ByTech_API.Migrations
 
             modelBuilder.Entity("ByTech_API.Models.Pedido", b =>
                 {
+                    b.HasOne("ByTech_API.Models.StatusPedido", "StatusPedido")
+                        .WithMany()
+                        .HasForeignKey("StatusPedidoId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ByTech_API.Models.Usuario", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("StatusPedido");
 
                     b.Navigation("Usuario");
                 });
@@ -530,6 +581,11 @@ namespace ByTech_API.Migrations
                         .IsRequired();
 
                     b.Navigation("TipoUsuario");
+                });
+
+            modelBuilder.Entity("ByTech_API.Models.Pedido", b =>
+                {
+                    b.Navigation("ItensPedidos");
                 });
 #pragma warning restore 612, 618
         }

@@ -36,6 +36,7 @@ builder.Services.AddAuthentication(x =>
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySQL(connectionString));
+
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IPagamentoService, PagamentoService>();
 builder.Services.AddScoped<IPedidoService, PedidoService>();

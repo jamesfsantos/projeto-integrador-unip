@@ -1,4 +1,6 @@
-﻿namespace ByTech_API.Models
+﻿using System.Reflection.Metadata.Ecma335;
+
+namespace ByTech_API.Models
 {
     public class Pedido
     {
@@ -14,6 +16,10 @@
         public string Complemento { get; set; }
         public string Cidade { get; set; }
         public string Cep { get; set; }
+        public int StatusPedidoId { get; set; }
+
+        public StatusPedido StatusPedido { get; set; }
+
         public virtual ICollection<ItemPedido> ItensPedidos { get; set; }
 
         public Usuario Usuario {  get; set; }
