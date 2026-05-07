@@ -1,6 +1,7 @@
 ﻿using ByTech_API.Contracts.Services;
 using ByTech_API.Data;
 using ByTech_API.Dtos;
+using ByTech_API.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ByTech_API.Services
@@ -13,6 +14,28 @@ namespace ByTech_API.Services
             _context = context;
         }
 
+        public async Task<PagamentoDto> GerarPagamento(PagamentoDto pagamentoDto)
+        {
+
+            var pagamento = new Pagamento
+            {
+                Id = pagamentoDto.Id,
+                DataConfirmacao = DateTime.Now,
+                Metodo = pagamentoDto.Metodo,
+                PedidoId = pagamentoDto.PedidoId,
+                Status = pagamentoDto.Status,
+            };
+
+            if (pagamento == null)
+                return null;
+        
+            _context.Pagamentos.Add(pagamento);
+            await _context.SaveChangesAsync();
+
+            return pagamentoDto;
+            
+        }
+
         public async Task<PagamentoDto> ObterPagamentoId(int id)
         {
             var pagamento = await _context.Pagamentos.FindAsync(id);
@@ -23,7 +46,7 @@ namespace ByTech_API.Services
             return new PagamentoDto
             {
                 Id = pagamento.Id,
-                VendaId = pagamento.PedidoId,
+                PedidoId = pagamento.PedidoId,
                 DataConfirmacao = pagamento.DataConfirmacao,
                 Metodo = pagamento.Metodo,
                 Status = pagamento.Status

@@ -6,5 +6,6 @@ namespace ByTech_API.Contracts.Services
     {
         Task<IEnumerable<PagamentoDto>> ObterTodos();
         Task<PagamentoDto> ObterPagamentoId(int id);
+        Task<PagamentoDto> GerarPagamento(PagamentoDto pagamento);
     }
 }

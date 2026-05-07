@@ -33,7 +33,7 @@ namespace ByTech_API.Services
                 Cep = pedidoDto.Cep,
                 Cidade = pedidoDto.Cidade,
                 Complemento = pedidoDto.Complemento,
-                StatusPedidoId = pedidoDto.StatusPedidoId,
+                StatusPedidoId = 1,
                 ItensPedidos = new List<ItemPedido>() // Começa vazia
             };
 
@@ -69,6 +69,21 @@ namespace ByTech_API.Services
             return pedidoDto;
         }
 
+        public async Task<bool> AlterarStatusPedido(int id, int idStatus)
+        {
+            var pedido = await _context.Pedidos.FindAsync(id);
+            var status = await _context.StatusPedidos.FindAsync(idStatus);
+
+            if (pedido == null || status == null)
+                return false;
+            
+
+            pedido.StatusPedidoId = idStatus;
+
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> ExcluirPedido(int id)
         {
             var pedido = await _context.Pedidos.FindAsync(id);
@@ -79,6 +94,17 @@ namespace ByTech_API.Services
             _context.Pedidos.Remove(pedido);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public  async Task<PedidoDto> ObterPedidoId(int id)
+        {
+            var pedido = await _context.Pedidos.Include(p => p.ItensPedidos)
+                                                 .Include(p => p.StatusPedido)
+                                                 .FirstOrDefaultAsync(p => p.Id == id);
+            if (pedido == null)
+                return null;
+
+            return new PedidoDto(pedido);
         }
 
         public async Task<IEnumerable<PedidoDto>> ObterTodosPedidos()

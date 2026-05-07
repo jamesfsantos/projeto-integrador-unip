@@ -71,6 +71,8 @@ namespace ByTech_API.Controllers
             return NoContent();
         }
 
+
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletarProduto(int id)
         {

@@ -13,18 +13,16 @@ namespace ByTech_API.Dtos
         public PagamentoDto(Pagamento pagamento)
         {
             Id = pagamento.Id;
-            VendaId = pagamento.PedidoId;
+            PedidoId = pagamento.PedidoId;
             Metodo = pagamento.Metodo;
             Status = pagamento.Status;
             DataConfirmacao = pagamento.DataConfirmacao;
-            Venda = pagamento.Pedido;
         }
 
         public int Id { get; set; }
-        public int VendaId { get; set; }
-        public MetodoPagamento Metodo { get; set; }
-        public PagamentoStatus Status { get; set; }
-        public DateTime DataConfirmacao { get; set; }
-        public Pedido Venda { get; set; }
+        public int PedidoId { get; set; }
+        public string Metodo { get; set; }
+        public string Status { get; set; }
+        public DateTime? DataConfirmacao { get; set; }
     }
 }
